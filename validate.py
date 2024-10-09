@@ -1,18 +1,26 @@
+import time
 import requests
 
 # Function to test if a proxy works
 def test_proxy(proxy):
     # URLs to test against
     target_urls = ["https://www.google.com", "https://www.bing.com"]
+    
+    # Proxies should not have 'https://' or 'http://'
+    # Strip 'http://' or 'https://' if it's present in the proxy string
+    if proxy.startswith("http://") or proxy.startswith("https://"):
+        proxy = proxy.split("://")[1]
+    
     proxies = {
-        "http": proxy,
-        "https": proxy
+        "http": f"http://{proxy}",
+        "https": f"https://{proxy}"
     }
     
     for url in target_urls:
         try:
             # Send a GET request using the proxy
             response = requests.get(url, proxies=proxies, timeout=5)
+            time.sleep(1)
             if response.status_code == 200:
                 print(f"Proxy {proxy} works on {url.split('//')[1]}")
                 return True
